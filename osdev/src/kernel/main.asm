@@ -1,64 +1,66 @@
-org 0x7C00
+rg 0x7C00
 bits 16
 
-%define ENDL 0x0D, 0x0A ; micro
+
+%define ENDL 0x0D, 0x0A
 
 
 start:
-	jmp main 		; gt to puts: einai prin apo to main
+    jmp main
 
 
 ;
-; prints a string
-; params:
-;	- ds:si points to string
+; Prints a string to the screen
+; Params:
+;   - ds:si points to string
 ;
 puts:
-	; save registers we will modify
-	push si
-	push ax
+    ; save registers we will modify
+    push si
+    push ax
+    push bx
 
 .loop:
-	lodsb			; loads next char in al register
-	or al, al		; verify if next char is null
-	jz .done		; an char einai null pame sto .done
+    lodsb               ; loads next character in al
+    or al, al           ; verify if next character is null?
+    jz .done
 
-	mov ah, 0x0e 		; bios int
-	mov bh, 0 		
-	int 0x10
+    mov ah, 0x0E        ; call bios interrupt
+    mov bh, 0           ; set page number to 0
+    int 0x10
 
-	jmp .loop
+    jmp .loop
 
-.done: 
-	pop ax
-	pop si
-	ret
-
-
+.done:
+    pop bx
+    pop ax
+    pop si    
+    ret
+    
 
 main:
+    ; setup data segments
+    mov ax, 0           ; can't set ds/es directly
+    mov ds, ax
+    mov es, ax
+    
+    ; setup stack
+    mov ss, ax
+    mov sp, 0x7C00      ; stack grows downwards from where we are loaded in memory
 
-	; setup data segments (variables ktl)
-	mov ax, 0    
-	mov ds, ax
-	mov es, ax
+    ; print hello world message
+    mov si, msg_hello
+    call puts
 
-	; setup stack
-	mov ss, ax
-	mov sp, 0x7C00 		; gia na bgoume apo floppy disk, >512 bytes
-
-	;print message
-	mov si, msg_hello
-	call puts
-	
-	
-	hlt
+    hlt
 
 .halt:
-	jmp .halt
+    jmp .halt
 
 
-msg_hello: db 'hello world', ENDL, 0
+
+msg_hello: db 'Hello world from kernel!', ENDL, 0
+
 
 times 510-($-$$) db 0
 dw 0AA55h
