@@ -93,6 +93,16 @@ main:
     mov si, msg_hello
     call puts
 
+    ; print disk read???
+    mov si, msg_disk_success
+    call puts
+
+    ; print giannis gay at keypress
+    mov ah, 0
+    int 16h
+    mov si, msg_johnny_makefun
+    call puts
+
     cli                         ; disable interrupts, this way CPU can't get out of "halt" state
     hlt
 
@@ -175,7 +185,7 @@ disk_read:
     push cx                             ; temporarily save CL (number of sectors to read)
     call lba_to_chs                     ; compute CHS
     pop ax                              ; AL = number of sectors to read
-    
+
     mov ah, 02h
     mov di, 3                           ; retry count
 
@@ -207,7 +217,6 @@ disk_read:
     pop ax                             ; restore registers modified
     ret
 
-
 ;
 ; Resets disk controller
 ; Parameters:
@@ -225,6 +234,8 @@ disk_reset:
 
 msg_hello:              db 'Hello world!', ENDL, 0
 msg_read_failed:        db 'Read from disk failed!', ENDL, 0
+msg_disk_success:        db 'Read from disk completed sucessfully!', ENDL, 0
+msg_johnny_makefun:        db 'johnny gae ass L L L L L very gae', ENDL, 0
 
 times 510-($-$$) db 0
 dw 0AA55h

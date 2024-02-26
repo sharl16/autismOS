@@ -1,1 +1,1 @@
-bochs -f bochs_config
+bochs -f bochsrc.txt

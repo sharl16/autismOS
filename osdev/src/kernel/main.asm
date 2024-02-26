@@ -1,4 +1,4 @@
-rg 0x7C00
+org 0x7C00
 bits 16
 
 
@@ -59,7 +59,7 @@ main:
 
 
 
-msg_hello: db 'Hello world from kernel!', ENDL, 0
+msg_hello: db 'Hello world!', ENDL, 0
 
 
 times 510-($-$$) db 0
